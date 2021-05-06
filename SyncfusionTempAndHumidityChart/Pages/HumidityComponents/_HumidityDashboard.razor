@@ -1,0 +1,123 @@
+﻿@inject IMeasurementService _service
+
+<SfDashboardLayout @ref="dashboardObject" AllowFloating="false" AllowResizing="false" AllowDragging="false" Columns="5" CellAspectRatio="4">
+    <DashboardLayoutPanels>
+
+        <DashboardLayoutPanel Row="0" Column="0" SizeX="1" SizeY="1">
+            <ContentTemplate>
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <h4>Chart Theme: </h4>
+                        <select @bind="humTheme">
+                            @foreach (var item in Enum.GetValues(typeof(Theme)))
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </ContentTemplate>
+        </DashboardLayoutPanel>
+
+        <DashboardLayoutPanel Row="0" Column="1" SizeX="2" SizeY="1">
+            <ContentTemplate>
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <h4>Number of Entries</h4>
+
+                    </div>
+                    <div class="col-12 text-center">
+                        <input type="number" @bind="numberHumEntries" />
+                        <SfProgressButton @onclick="UpdateHumChart">
+                            <ProgressButtonSpinSettings Position="SpinPosition.Center"></ProgressButtonSpinSettings>
+                            <ProgressButtonAnimationSettings Effect="Syncfusion.Blazor.SplitButtons.AnimationEffect.ZoomOut"></ProgressButtonAnimationSettings>
+                            Update Chart
+                        </SfProgressButton>
+                    </div>
+                </div>
+            </ContentTemplate>
+        </DashboardLayoutPanel>
+
+        <DashboardLayoutPanel Row="1" Column="0" SizeX=3 SizeY=6>
+            <ContentTemplate>
+                <div>
+                    <_HumidityChart theme="humTheme" Humidities="Humidities"></_HumidityChart>
+                </div>
+            </ContentTemplate>
+        </DashboardLayoutPanel>
+
+
+        <DashboardLayoutPanel Row="1" Column="3" SizeX="1" SizeY="3">
+            <ContentTemplate>
+                <div class="row text-center">
+                    <div class="col-12"><h3>Latest Humidity:</h3></div>
+                    <div class="col-12"><h4>@LatestHum.Humidity%</h4></div>
+                    <div class="col-12"><h4>Date: @LatestHum.Time</h4></div>
+                </div>
+            </ContentTemplate>
+        </DashboardLayoutPanel>
+
+    </DashboardLayoutPanels>
+</SfDashboardLayout>
+
+
+
+@code {
+
+    SfDashboardLayout dashboardObject;
+    public Theme humTheme { get; set; }
+    public string numberHumEntries { get; set; }
+    public bool IsRunning { get; set; }
+    public List<HumidityInfo> Humidities = new List<HumidityInfo>();
+
+    public HumidityInfo LatestHum { get; set; } = new HumidityInfo();
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsRunning = false;
+
+        Measurement measurements = await _service.GetMeasurementsAsync();
+
+        Measurement latestmeasurement = await _service.GetMeasurementAsync();
+
+        #region Humidity
+        Humidities = measurements.feeds.OrderBy(x => x.created_at).Select(x => new HumidityInfo()
+        {
+            Humidity = x.field2,
+            Time = x.created_at.ToLongTimeString()
+        }).ToList();
+
+        numberHumEntries = Humidities.Count.ToString();
+
+        LatestHum = latestmeasurement.feeds.OrderByDescending(x => x.created_at).Select(x => new HumidityInfo()
+        {
+            Humidity = x.field2,
+            Time = x.created_at.ToString()
+        }).First();
+        #endregion
+    }
+
+    public async Task UpdateHumChart()
+    {
+        if (!string.IsNullOrWhiteSpace(numberHumEntries))
+        {
+            try
+            {
+                IsRunning = true;
+
+                var humMeasurement = await _service.GetMeasurementsAsync(numberHumEntries);
+                Humidities = humMeasurement.feeds.OrderBy(x => x.created_at).Select(x => new HumidityInfo()
+                {
+                    Humidity = x.field2,
+                    Time = x.created_at.ToLongTimeString()
+                }).ToList();
+                IsRunning = false;
+            }
+            catch (Exception e)
+            {
+
+            }
+
+        }
+    }
+}

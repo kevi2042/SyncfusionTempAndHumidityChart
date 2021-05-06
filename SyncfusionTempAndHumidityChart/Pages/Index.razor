@@ -1,0 +1,105 @@
+@page "/"
+@inject IMeasurementService _service
+
+
+
+<div class="col-12 control-section">
+    <div class="content-wrapper">
+
+        <SfTab>
+
+            <TabEvents Selecting="Select">
+            </TabEvents>
+
+            <TabItems>
+
+                <TabItem>
+
+                    <ChildContent>
+                        <TabHeader Text="Temperature"></TabHeader>
+                    </ChildContent>
+                    <ContentTemplate>
+
+                        <_TemperatureDashboard></_TemperatureDashboard>
+
+                    </ContentTemplate>
+                </TabItem>
+
+                <TabItem>
+
+                    <ChildContent>
+                        <TabHeader Text="Humidity"></TabHeader>
+                    </ChildContent>
+
+                    <ContentTemplate>
+
+                        <_HumidityDashboard></_HumidityDashboard>
+
+                    </ContentTemplate>
+                </TabItem>
+            </TabItems>
+        </SfTab>
+
+    </div>
+</div>
+
+<style>
+    .e-dashboardlayout {
+        padding: 10px;
+    }
+
+        .e-dashboardlayout.e-control .e-panel:hover span {
+            display: block;
+        }
+
+        .e-dashboardlayout .e-panel .e-panel-container .text-align {
+            vertical-align: middle;
+            font-weight: 600;
+            font-size: 20px;
+            text-align: center;
+        }
+
+    .e-template-icon {
+        padding: 10px;
+        float: right;
+        display: none;
+    }
+
+    .text-align {
+        line-height: 160px;
+    }
+
+    .sb-demo-section .container-fluid {
+        background: #E5E5E5;
+    }
+
+    .ulstyle {
+        margin: 0px;
+        padding-left: 20px;
+        display: inline-block;
+    }
+
+    .list {
+        float: left;
+        line-height: 20px;
+        margin: 10px;
+        min-width: 350px;
+    }
+
+    .content-wrapper {
+        width: 100%;
+    }
+</style>
+
+
+@code{
+
+    public void Select(SelectingEventArgs args)
+    {
+        if (args.IsSwiped)
+        {
+            args.Cancel = true;
+        }
+    }
+}
+

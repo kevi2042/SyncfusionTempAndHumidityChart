@@ -1,0 +1,20 @@
+﻿
+
+<SfChart Theme="theme" Title="Temperature" Height="100%">
+    <ChartPrimaryXAxis ValueType="Syncfusion.Blazor.Charts.ValueType.Category"></ChartPrimaryXAxis>
+    <ChartPrimaryYAxis LabelFormat=""></ChartPrimaryYAxis>
+    <ChartSeriesCollection>
+        <ChartSeries DataSource="@Temperatures" XName="Time" YName="Temperature" Type="ChartSeriesType.Line">
+        </ChartSeries>
+    </ChartSeriesCollection>
+    <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
+    <ChartZoomSettings EnableSelectionZooming="true"></ChartZoomSettings>
+</SfChart>
+
+@code {
+    [Parameter]
+    public Theme theme { get; set; }
+
+    [Parameter]
+    public ICollection<TemperatureInfo> Temperatures { get; set; } = new Collection<TemperatureInfo>();
+}

@@ -1,0 +1,122 @@
+﻿@inject IMeasurementService _service
+
+<SfDashboardLayout @ref="dashboardObject" AllowFloating="false" AllowResizing="false" AllowDragging="false" Columns="5" CellAspectRatio="4">
+    <DashboardLayoutPanels>
+
+        <DashboardLayoutPanel Row="0" Column="0" SizeX="1" SizeY="1">
+            <ContentTemplate>
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <h4>Chart Theme: </h4>
+                        <select @bind="tempTheme">
+                            @foreach (var item in Enum.GetValues(typeof(Theme)))
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </ContentTemplate>
+        </DashboardLayoutPanel>
+
+        <DashboardLayoutPanel Row="0" Column="1" SizeX="2" SizeY="1">
+            <ContentTemplate>
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <h4>Number of Entries</h4>
+                    </div>
+                    <div class="col-12 text-center">
+                        <input type="number" @bind="numberTempEntries" />
+                        <SfProgressButton IsPrimary="true" @onclick="UpdateTempChart">
+                            <ProgressButtonSpinSettings Position="SpinPosition.Center"></ProgressButtonSpinSettings>
+                            <ProgressButtonAnimationSettings Effect="Syncfusion.Blazor.SplitButtons.AnimationEffect.ZoomOut"></ProgressButtonAnimationSettings>
+                            Update Chart
+                        </SfProgressButton>
+                    </div>
+                </div>
+            </ContentTemplate>
+        </DashboardLayoutPanel>
+
+        <DashboardLayoutPanel Row="1" Column="0" SizeX=3 SizeY=6>
+            <ContentTemplate>
+                <div class="row">
+                    <div class="col-12">
+                        <_TemperatureChart theme="tempTheme" Temperatures="Temperatures"></_TemperatureChart>
+                    </div>
+                </div>
+            </ContentTemplate>
+        </DashboardLayoutPanel>
+
+        <DashboardLayoutPanel Row="1" Column="3" SizeX="1" SizeY="3">
+            <ContentTemplate>
+                <div class="row text-center">
+                    <div class="col-12"><h3>Latest Temperature:</h3></div>
+                    <div class="col-12"><h4>@LatestTemp.Temperature Celsius</h4></div>
+                    <div class="col-12"><h4>Date: @LatestTemp.Time</h4></div>
+                </div>
+            </ContentTemplate>
+        </DashboardLayoutPanel>
+
+    </DashboardLayoutPanels>
+</SfDashboardLayout>
+
+@code {
+    SfDashboardLayout dashboardObject;
+
+    public Theme tempTheme { get; set; }
+    public string numberTempEntries { get; set; }
+    public bool IsRunning { get; set; }
+    public List<TemperatureInfo> Temperatures = new List<TemperatureInfo>();
+    public TemperatureInfo LatestTemp { get; set; } = new TemperatureInfo();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsRunning = false;
+
+        Measurement measurements = await _service.GetMeasurementsAsync();
+
+        #region Temperature
+        Temperatures = measurements.feeds.OrderBy(x => x.created_at).Select(x => new TemperatureInfo()
+        {
+            Temperature = x.field1,
+            Time = x.created_at.ToLongTimeString()
+        }).ToList();
+
+        numberTempEntries = Temperatures.Count.ToString();
+
+
+        Measurement latestmeasurement = await _service.GetMeasurementAsync();
+        LatestTemp = latestmeasurement.feeds.OrderByDescending(x => x.created_at).Select(x => new TemperatureInfo()
+        {
+            Temperature = x.field1,
+            Time = x.created_at.ToString()
+        }).First();
+
+        #endregion
+    }
+
+    public async Task UpdateTempChart()
+    {
+        if (!string.IsNullOrWhiteSpace(numberTempEntries))
+        {
+            try
+            {
+                IsRunning = true;
+
+                var tempMeasurement = await _service.GetMeasurementsAsync(numberTempEntries);
+                Temperatures = tempMeasurement.feeds.OrderBy(x => x.created_at).Select(x => new TemperatureInfo()
+                {
+                    Temperature = x.field1,
+                    Time = x.created_at.ToLongTimeString()
+                }).ToList();
+                IsRunning = false;
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+    }
+
+}

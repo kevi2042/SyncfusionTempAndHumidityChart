@@ -1,0 +1,18 @@
+﻿<SfChart Theme="theme" Title="Humidity" Height="100%">
+    <ChartPrimaryXAxis ValueType="Syncfusion.Blazor.Charts.ValueType.Category"></ChartPrimaryXAxis>
+    <ChartPrimaryYAxis LabelFormat=""></ChartPrimaryYAxis>
+    <ChartSeriesCollection>
+        <ChartSeries DataSource="@Humidities" XName="Time" YName="Humidity" Type="ChartSeriesType.Line">
+        </ChartSeries>
+    </ChartSeriesCollection>
+    <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
+    <ChartZoomSettings EnableSelectionZooming="true"></ChartZoomSettings>
+</SfChart>
+
+@code {
+    [Parameter]
+    public Theme theme { get; set; }
+
+    [Parameter]
+    public ICollection<HumidityInfo> Humidities { get; set; } = new Collection<HumidityInfo>();
+}
