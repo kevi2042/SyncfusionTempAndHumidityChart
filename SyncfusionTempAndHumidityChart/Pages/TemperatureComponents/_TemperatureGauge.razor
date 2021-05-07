@@ -1,0 +1,27 @@
+﻿@using Syncfusion.Blazor.LinearGauge
+
+<SfLinearGauge Title="Temparature Measure" Orientation="Syncfusion.Blazor.LinearGauge.Orientation.Vertical">
+    <LinearGaugeContainer Width="13" RoundedCornerRadius="5" Type="ContainerType.Thermometer">
+        <LinearGaugeAxes>
+            <LinearGaugeAxis Minimum="-20" Maximum="60">
+                <LinearGaugeMajorTicks Color="#9e9e9e" Interval="20" Height="20" />
+                <LinearGaugeMinorTicks Color="#9e9e9e" Interval="10" Height="10" />
+                <LinearGaugePointers>
+                    <LinearGaugePointer Value="temperature" Height="13" Width="13" Type="Point.Bar" Color="#f02828" />
+                </LinearGaugePointers>
+            </LinearGaugeAxis>
+            <LinearGaugeAxis Minimum="0" Maximum="180" OpposedPosition="true">
+                <LinearGaugeMajorTicks Interval="20" Height="20" />
+                <LinearGaugeMinorTicks Color="#9e9e9e" Interval="10" Height="10" />
+                <LinearGaugePointers>
+                    <LinearGaugePointer Width="0" />
+                </LinearGaugePointers>
+            </LinearGaugeAxis>
+        </LinearGaugeAxes>
+    </LinearGaugeContainer>
+</SfLinearGauge>
+
+@code {
+    [Parameter]
+    public double temperature { get; set; }
+}

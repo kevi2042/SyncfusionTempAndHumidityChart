@@ -57,6 +57,16 @@
             </ContentTemplate>
         </DashboardLayoutPanel>
 
+        <DashboardLayoutPanel Row="1" Column="4" SizeX="1" SizeY="6">
+            <ContentTemplate>
+                <div class="row text-center">
+                    <div class="col-12">
+                        <_HumidityGauge humidity="humidity"></_HumidityGauge>
+                    </div>
+                </div>
+            </ContentTemplate>
+        </DashboardLayoutPanel>
+
     </DashboardLayoutPanels>
 </SfDashboardLayout>
 
@@ -69,6 +79,7 @@
     public string numberHumEntries { get; set; }
     public bool IsRunning { get; set; }
     public List<HumidityInfo> Humidities = new List<HumidityInfo>();
+    public double humidity { get; set; }
 
     public HumidityInfo LatestHum { get; set; } = new HumidityInfo();
 
@@ -95,6 +106,10 @@
             Time = x.created_at.ToString()
         }).First();
         #endregion
+
+        var hum = LatestHum.Humidity.Replace(".", ",");
+
+        humidity = Convert.ToDouble(hum);
     }
 
     public async Task UpdateHumChart()

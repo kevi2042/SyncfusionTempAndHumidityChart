@@ -58,6 +58,17 @@
             </ContentTemplate>
         </DashboardLayoutPanel>
 
+        <DashboardLayoutPanel Row="1" Column="4" SizeX="1" SizeY="6">
+            <ContentTemplate>
+                <div class="row text-center">
+                    <div class="col-12">
+                        <_TemperatureGauge temperature="temperature"></_TemperatureGauge>
+                    </div>
+                </div>
+            </ContentTemplate>
+        </DashboardLayoutPanel>
+
+
     </DashboardLayoutPanels>
 </SfDashboardLayout>
 
@@ -69,7 +80,7 @@
     public bool IsRunning { get; set; }
     public List<TemperatureInfo> Temperatures = new List<TemperatureInfo>();
     public TemperatureInfo LatestTemp { get; set; } = new TemperatureInfo();
-
+    public double temperature { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -93,6 +104,9 @@
             Temperature = x.field1,
             Time = x.created_at.ToString()
         }).First();
+
+        var temp = LatestTemp.Temperature.Replace(".", ",");
+        temperature = Convert.ToDouble(temp);
 
         #endregion
     }
